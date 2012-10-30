@@ -2,15 +2,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mongoscheduler',
-    version='0.0.1',
+    name='celery-schedulers',
+    version='0.0.2',
     author='Brent Tubbs',
     author_email='brent.tubbs@gmail.com',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        'pymongo',
-    ],
-    url='http://bits.btubbs.com/celery-mongoscheduler',
-    description='A Celery scheduler backend using MongoDB',
+    url='http://bits.btubbs.com/celery-schedulers',
+    description='Celery scheduler backends for Redis and MongoDB',
 )

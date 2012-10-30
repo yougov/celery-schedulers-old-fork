@@ -4,3 +4,4 @@ syntax: glob
 ._*
 develop-eggs/*
 env/*
+*egg-info*

@@ -1,11 +1,11 @@
 """
-A celerybeat scheduler that uses MongoDB for remembering when it ran what.
+A celerybeat scheduler with a Mongo backend.
 """
 
 import logging
 
 from celery.beat import Scheduler
-from django.conf import settings
+from celery import current_app
 import pymongo
 
 try:
@@ -16,7 +16,11 @@ except ImportError:
 
 class MongoScheduler(Scheduler):
     def __init__(self, *args, **kwargs):
-        self.uri = settings.CELERY_MONGO_SCHEDULER_URI
+
+        # XXX It's ugly to use something called 'filename' as a URI.  Make an
+        # upstream ticket for a nicer way of passing config into a custom
+        # scheduler backend.
+        self.uri = current_app.conf['CELERYBEAT_SCHEDULE_FILENAME']
         logging.debug('MongoScheduler connecting to %s' % self.uri)
         parsed = pymongo.uri_parser.parse_uri(self.uri)
         conn = pymongo.Connection(*parsed['nodelist'][0])
@@ -33,7 +37,7 @@ class MongoScheduler(Scheduler):
             self.sync()
         else:
             self.entries = pickle.loads(str(entries['entries']))
-        Scheduler.__init__(self, *args, **kwargs)
+        super(MongoScheduler, self).__init__(*args, **kwargs)
 
     def setup_schedule(self):
         self.merge_inplace(self.app.conf.CELERYBEAT_SCHEDULE)
