@@ -10,6 +10,14 @@ setup(
     include_package_data=True,
     url='http://bits.btubbs.com/celery-schedulers',
     description='Celery scheduler backends for Redis and MongoDB',
+    install_requires=[
+        'six',
+    ],
+    tests_require=[
+        'celery',
+        'redis',
+        'pymongo',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -18,5 +26,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
     ],
 )

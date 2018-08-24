@@ -3,16 +3,13 @@ A celerybeat scheduler with a Redis backend.
 """
 
 import logging
-import urlparse
+
+import six.moves.cPickle as pickle
+from six.moves.urllib.parse import urlsplit
 
 from celery.beat import Scheduler
 from celery import current_app
 import redis
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 
 class RedisScheduler(Scheduler):
@@ -22,7 +19,7 @@ class RedisScheduler(Scheduler):
         # upstream ticket for a nicer way of passing config into a custom
         # scheduler backend.
         self.uri = current_app.conf['CELERYBEAT_SCHEDULE_FILENAME']
-        logging.debug('RedisScheduler connecting to %s' % self.uri)
+        logging.debug('RedisScheduler connecting to %s', self.uri)
         self.redis = redis.StrictRedis(**parse_redis_uri(self.uri))
 
         # XXX Would be nice to make this configurable.
@@ -67,7 +64,7 @@ def parse_redis_uri(uri):
     Given a uri like redis://localhost:6379/0, return a dict with host, port,
     and db members.
     """
-    parsed = urlparse.urlsplit(uri)
+    parsed = urlsplit(uri)
     return {
         'host': parsed.hostname,
         'port': parsed.port,

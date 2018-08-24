@@ -4,14 +4,11 @@ A celerybeat scheduler with a Mongo backend.
 
 import logging
 
+import six.moves.cPickle as pickle
+
 from celery.beat import Scheduler
 from celery import current_app
 import pymongo
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 
 class MongoScheduler(Scheduler):
@@ -21,7 +18,7 @@ class MongoScheduler(Scheduler):
         # upstream ticket for a nicer way of passing config into a custom
         # scheduler backend.
         self.uri = current_app.conf['CELERYBEAT_SCHEDULE_FILENAME']
-        logging.debug('MongoScheduler connecting to %s' % self.uri)
+        logging.debug('MongoScheduler connecting to %s', self.uri)
         parsed = pymongo.uri_parser.parse_uri(self.uri)
         conn = pymongo.Connection(*parsed['nodelist'][0])
         db = conn[parsed['database']]
@@ -53,10 +50,11 @@ class MongoScheduler(Scheduler):
     schedule = property(get_schedule, set_schedule)
 
     def sync(self):
-        self.collection.update({'key': 'entries'},
-                               {'key': 'entries', 'entries':
-                                pickle.dumps(self.entries)},
-                                upsert=True)
+        self.collection.update(
+            {'key': 'entries'},
+            {'key': 'entries', 'entries':
+             pickle.dumps(self.entries)},
+            upsert=True)
 
     def close(self):
         self.sync()
