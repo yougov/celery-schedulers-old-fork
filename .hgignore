@@ -1,7 +1,0 @@
-syntax: glob
-*pyc
-*swp
-._*
-develop-eggs/*
-env/*
-*egg-info*
